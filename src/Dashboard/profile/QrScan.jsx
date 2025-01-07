@@ -10,11 +10,12 @@ const QrScanPage = () => {
   const [getBtnText, setGetButtonText] = useState("Get Qr Code");
   const [profiles, setProfiles] = useState([]);
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    console.log(userData);
-
     fetchProfiles();
   }, []);
+
+  const userData = JSON.parse(localStorage.getItem("userData"));
+  const loginUserID = userData ? userData.user_data.userID : null;
+  const accessToken = userData ? userData.access_token : null;
 
   const startSocket = (userId) => {
     const socketInstance = io(SOCKET_SERVER_URL);
@@ -48,6 +49,7 @@ const QrScanPage = () => {
       {
         method: "POST",
         headers: {
+          Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ userID }),
@@ -66,6 +68,7 @@ const QrScanPage = () => {
       {
         method: "POST",
         headers: {
+          Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ userID }),
