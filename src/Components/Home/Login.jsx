@@ -30,7 +30,8 @@ const Login = () => {
   const validateForm = () => {
     const newErrors = {};
     if (!formValues.login) newErrors.login = "Please input your Login Id.";
-    if (!formValues.password) newErrors.password = "Please input your Password.";
+    if (!formValues.password)
+      newErrors.password = "Please input your Password.";
     if (!formValues.terms)
       newErrors.terms = "Please agree to the Terms of Use and Privacy Policy.";
     return newErrors;
@@ -74,12 +75,6 @@ const Login = () => {
       } else if (response.status === 200) {
         const userData = await response.json();
         toast.success("Login successful!");
-
-         // Save user data to local storage
-        localStorage.setItem("userData", JSON.stringify(userData));
-
-        // Log the saved user data
-        console.log("User data saved to localStorage:", userData);
 
         // Reset form values
         setFormValues({
