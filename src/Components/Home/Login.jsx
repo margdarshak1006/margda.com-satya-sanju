@@ -56,7 +56,7 @@ const Login = () => {
 
     // Handle regular login
     try {
-      const response = await fetch("https://margda.in:7000/api/userlogin", {
+      const response = await fetch("https://margda.in:7000/api/android/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -74,6 +74,12 @@ const Login = () => {
       } else if (response.status === 200) {
         const userData = await response.json();
         toast.success("Login successful!");
+
+         // Save user data to local storage
+        localStorage.setItem("userData", JSON.stringify(userData));
+
+        // Log the saved user data
+        console.log("User data saved to localStorage:", userData);
 
         // Reset form values
         setFormValues({
