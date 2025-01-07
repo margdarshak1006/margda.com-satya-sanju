@@ -4,6 +4,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 //Home
 import Home from './Pages/Home'
 import PrivacyStatement from './Pages/FooterPages/PrivacyStatement';
+import TermsofService from './Pages/FooterPages/TermsofService'
+import RefundPolicy from './Pages/FooterPages/RefundPolicy'
 
 import  Login  from './Components/Home/Login';
 import  Sign   from './Components/Home/Signup'
@@ -64,6 +66,9 @@ function App() {
         {/* Home */}
         <Route path="/" element={<Home />} />
         <Route path="/privacy-statement" element={<PrivacyStatement />} />
+        <Route path="/terms-of-service" element={<TermsofService />} />
+        <Route path="/refund-policy" element={<RefundPolicy />} />
+
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Sign />} />
         <Route path="/forgotpassword" element={<ForgotPassword />} />

@@ -166,7 +166,7 @@ const Footer = () => {
             <ul className="text-gray-600 space-y-3">
               <li>
                 <Link
-                  to="/statutory-documents"
+                  to=""
                   className="flex items-center hover:text-orange-500 transition transform hover:translate-x-2 duration-300"
                 >
                   <HiOutlineArrowNarrowRight className="mr-2" /> Statutory Documents
@@ -198,7 +198,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  to="/pay-online"
+                  to=""
                   className="flex items-center hover:text-orange-500 transition transform hover:translate-x-2 duration-300"
                 >
                   <HiOutlineArrowNarrowRight className="mr-2" /> Pay Online

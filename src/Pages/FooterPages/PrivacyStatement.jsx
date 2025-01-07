@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react'; // Import useEffect
 import { FaShieldAlt } from 'react-icons/fa';
 import Nav from '../../Components/Home/navbar';
 import Footer from '../../Components/Home/Footer';
 
 const PrivacyStatement = () => {
+  // Scroll to top on component mount
+  useEffect(() => {
+    window.scrollTo(0, 0); // Scroll to the top of the page
+  }, []); // Empty dependency array ensures this runs only once on mount
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Navbar */}
