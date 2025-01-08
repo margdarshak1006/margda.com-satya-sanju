@@ -20,8 +20,12 @@ import {
   FaDatabase,
   FaUserPlus,
 } from "react-icons/fa";
+<<<<<<< HEAD
 import WhatsAppCon from "../../Components/Dashboard/SendWhatsappCon";
 import EmailCon from "../../Components/Dashboard/SendEmailCon"; // Import the EmailCon component
+=======
+import { WhatsAppCon } from "../../Components/Dashboard/SendWhatsappCon";
+>>>>>>> 37a55e6618532d82a45a5f8d8f36cb8cb438715f
 
 const Leads = () => {
   const [isPincodeDropdownOpen, setIsPincodeDropdownOpen] = useState(false);
@@ -35,7 +39,10 @@ const Leads = () => {
   const [selectedRows, setSelectedRows] = useState([]); // Track selected rows
   const [selectAll, setSelectAll] = useState(false); // Track "Select All" state
   const [showWhatsAppSend, setShowWhatsAppSend] = useState(false);
+<<<<<<< HEAD
   const [showEmailSend, setShowEmailSend] = useState(false); // State for email modal
+=======
+>>>>>>> 37a55e6618532d82a45a5f8d8f36cb8cb438715f
 
   const dropdownRef = useRef(null);
 
@@ -116,6 +123,7 @@ const Leads = () => {
       selectedRows
     );
     if (selectedRows.length === 0) {
+<<<<<<< HEAD
       alert("Select at least one lead");
       return;
     }
@@ -130,6 +138,14 @@ const Leads = () => {
       default:
         console.log(`Bulk action "${action}" not implemented`);
     }
+=======
+      alert("select at least one lead");
+    }
+    if (action === "whatsapp") {
+      setShowWhatsAppSend(true);
+    }
+    // Perform bulk action logic here
+>>>>>>> 37a55e6618532d82a45a5f8d8f36cb8cb438715f
   };
 
   // Handle delete
@@ -172,7 +188,11 @@ const Leads = () => {
   // Handle row selection
   const handleRowSelect = (lead) => {
     if (lead.mobile.includes("**")) {
+<<<<<<< HEAD
       return alert("You can't select this lead");
+=======
+      return alert("You can't selet this lead");
+>>>>>>> 37a55e6618532d82a45a5f8d8f36cb8cb438715f
     }
     if (selectedRows.includes(lead)) {
       setSelectedRows(selectedRows.filter((item) => item !== lead));
@@ -611,6 +631,12 @@ const Leads = () => {
           </button>
         </div>
       </div>
+      {showWhatsAppSend && (
+        <WhatsAppCon
+          selectedLeads={selectedRows}
+          setSendWhatsApp={setShowWhatsAppSend}
+        />
+      )}
 
       {/* WhatsApp Modal */}
       {showWhatsAppSend && (
