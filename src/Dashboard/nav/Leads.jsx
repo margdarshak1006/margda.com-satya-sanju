@@ -128,7 +128,7 @@ const Leads = () => {
       const response = await fetch(
         "https://margda.in:7000/api/margda.org/delete-lead",
         {
-          method: "POST",
+          method: "DELETE",
           headers: {
             Authorization: `Bearer ${accessToken}`,
             "Content-Type": "application/json",
@@ -221,6 +221,15 @@ const Leads = () => {
     return <div className="p-6 text-center text-red-500">Error: {error}</div>;
   }
 
+  const handleRecordsPerPageChange = (e) => {
+    const value = parseInt(e.target.value, 10); // Parse the input value as an integer
+    if (value < 1) {
+      setRecordsPerPage(1); // Set to 1 if the value is less than 1
+    } else {
+      setRecordsPerPage(value); // Otherwise, set the value
+    }
+  };
+
   return (
     <div className="p-6 min-h-screen flex flex-col relative">
       <div>
@@ -284,7 +293,7 @@ const Leads = () => {
             <input
               type="number"
               value={recordsPerPage}
-              onChange={(e) => setRecordsPerPage(Number(e.target.value))}
+              onChange={handleRecordsPerPageChange}
               className="border border-gray-300 p-2 rounded w-20"
               min="1"
             />
@@ -444,7 +453,7 @@ const Leads = () => {
                     <button
                       title="Delete"
                       className="p-2 bg-red-500 text-white rounded-full shadow hover:bg-red-600 transition"
-                      onClick={() => handleDelete(item.dataID)} // Call handleDelete with dataID
+                      onClick={() => handleDelete(item.dataID || item.userID)} // Call handleDelete with dataID
                     >
                       <FaTrash />
                     </button>

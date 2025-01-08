@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import io from "socket.io-client";
 
 const SOCKET_SERVER_URL = "https://margda.in:3000";
@@ -14,7 +14,6 @@ const QrScanPage = () => {
   }, []);
 
   const userData = JSON.parse(localStorage.getItem("userData"));
-  const loginUserID = userData ? userData.user_data.userID : null;
   const accessToken = userData ? userData.access_token : null;
 
   const startSocket = (userId) => {
@@ -52,12 +51,12 @@ const QrScanPage = () => {
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ userID }),
       }
     );
     const data = await response.json();
     if (response.ok) {
-      setInstanceId(data);
+      setInstanceId(data.instanceId);
+      setQrCodeSrc(data.qrcode);
     }
     console.log(data);
   };
