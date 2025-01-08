@@ -1,23 +1,86 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-const SendEmailCon = ({ setSendEmail }) => {
+const SendEmailCon = ({ setSendEmail, selectedLeads, setSelectedLeads }) => {
   const [emailDetails, setEmailDetails] = useState({
-    recipientEmails: "",
+    recipientEmails: [],
     subject: "",
     body: "",
     senderEmail: "",
     senderPassword: "",
     replyToEmail: "",
     senderName: "",
-    recipientnames: "",
+    recipientnames: [],
     attachment_urls: [],
     tempID: null,
     dataIDs: [],
     userIDs: [],
   });
 
+  const [templates, setTemplates] = useState([]);
+  const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [selectedService, setSelectedService] = useState("outlook-smtp");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const userLocalData = JSON.parse(localStorage.getItem("userData"));
+  const accessToken = userLocalData ? userLocalData.access_token : null;
+  const senderName = userLocalData ? userLocalData.user_data.name : "";
+
+  useEffect(() => {
+    fetchTemplates();
+  }, []);
+
+  const fetchTemplates = async () => {
+    try {
+      const response = await fetch(
+        "https://margda.in:7000/api/margda.org/templates/get-templates",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to fetch templates");
+      const data = await response.json();
+      console.log("API Response:", data);
+
+      // Filter templates where `temptype` is "E" (email templates)
+      const filterTemplates = data.Templates.filter(
+        (template) => template.temptype === "E "
+      );
+      console.log("Filtered Email Templates:", filterTemplates);
+
+      setTemplates(filterTemplates);
+    } catch (error) {
+      console.error("Error fetching templates:", error);
+      setError("Failed to fetch templates. Please try again later.");
+    }
+  };
+
+  const handleTemplateSelection = (template) => {
+    if (template) {
+      setSelectedTemplate(template);
+      setEmailDetails((prevState) => ({
+        ...prevState,
+        subject: template.subject || "",
+        body: template.matter || "",
+        attachment_urls: template.attach_url ? [template.attach_url] : [],
+        tempID: template.tempID || null,
+      }));
+    } else {
+      setSelectedTemplate(null);
+      setEmailDetails((prevState) => ({
+        ...prevState,
+        subject: "",
+        body: "",
+        attachment_urls: [],
+        tempID: null,
+      }));
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,30 +95,84 @@ const SendEmailCon = ({ setSendEmail }) => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent page reload
+    e.preventDefault();
+
+    if (!selectedLeads.length) {
+      setError("Please select at least one lead.");
+      return;
+    }
+
+    if (!selectedTemplate) {
+      setError("Please select a template.");
+      return;
+    }
+
+    if (
+      (selectedService === "outlook-smtp" || selectedService === "gmail") &&
+      (!emailDetails.senderEmail || !emailDetails.senderPassword)
+    ) {
+      setError("Sender email and password are required for this service.");
+      return;
+    }
+
     setLoading(true);
+    setError("");
 
     const urlMap = {
       "outlook-smtp": "https://margda.in:7000/api/email/send-email/outlook-smtp",
       "outlook-graph": "https://margda.in:7000/api/email/send-email/outlook-graph-api",
       aws: "https://margda.in:7000/api/email/send-email/aws",
+      gmail: "https://margda.in:7000/api/email/send-email/gmail",
     };
     const url = urlMap[selectedService];
+
+    const emailData = {
+      ...emailDetails,
+      recipientEmails: selectedLeads.map((lead) => lead.email),
+      recipientnames: selectedLeads.map((lead) => lead.name),
+      dataIDs: selectedLeads.map((lead) => lead.dataID),
+      userIDs: selectedLeads.map((lead) => lead.userID),
+      senderName: senderName,
+    };
 
     try {
       const response = await fetch(url, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(emailDetails),
+        body: JSON.stringify(emailData),
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to send email");
+      }
+
       const data = await response.json();
-      alert(data.message);
+      alert(data.message || "Email sent successfully!");
+
+      // Clear form and reset state
+      setEmailDetails({
+        recipientEmails: [],
+        subject: "",
+        body: "",
+        senderEmail: "",
+        senderPassword: "",
+        replyToEmail: "",
+        senderName: "",
+        recipientnames: [],
+        attachment_urls: [],
+        tempID: null,
+        dataIDs: [],
+        userIDs: [],
+      });
+      setSelectedLeads([]);
+      setSelectedTemplate(null);
     } catch (error) {
       console.error("Error sending email:", error);
-      alert("Failed to send email");
+      setError(error.message || "Failed to send email");
     } finally {
       setLoading(false);
     }
@@ -73,21 +190,38 @@ const SendEmailCon = ({ setSendEmail }) => {
             ✖
           </button>
         </div>
+        {error && <div className="text-red-500 mb-4">{error}</div>}
         <form className="space-y-4" onSubmit={handleSubmit}>
+          {/* Template Selection */}
           <div className="flex flex-col">
-            <label htmlFor="recipientEmails" className="font-bold mb-2">
-              Recipient Emails 
+            <label htmlFor="template" className="font-bold mb-2">
+              Select Template
             </label>
-            <input
-              type="text"
-              name="recipientEmails"
-              id="recipientEmails"
-              value={emailDetails.recipientEmails}
-              onChange={handleChange}
+            <select
+              id="template"
+              value={selectedTemplate ? selectedTemplate.tempID : ""}
+              onChange={(e) => {
+                const selected = templates.find(
+                  (template) => template.tempID === e.target.value
+                );
+                handleTemplateSelection(selected);
+              }}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter recipient emails"
-            />
+            >
+              <option value="">Select a template</option>
+              {templates.length > 0 ? (
+                templates.map((template) => (
+                  <option key={template.tempID} value={template.tempID}>
+                    {template.template}
+                  </option>
+                ))
+              ) : (
+                <option disabled>No templates available</option>
+              )}
+            </select>
           </div>
+
+          {/* Subject */}
           <div className="flex flex-col">
             <label htmlFor="subject" className="font-bold mb-2">
               Subject
@@ -99,9 +233,12 @@ const SendEmailCon = ({ setSendEmail }) => {
               value={emailDetails.subject}
               onChange={handleChange}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter subject"
+              placeholder={selectedTemplate ? "Subject from template" : "Enter subject"}
+              disabled={!!selectedTemplate}
             />
           </div>
+
+          {/* Body */}
           <div className="flex flex-col">
             <label htmlFor="body" className="font-bold mb-2">
               Body
@@ -113,9 +250,64 @@ const SendEmailCon = ({ setSendEmail }) => {
               onChange={handleChange}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               rows="5"
-              placeholder="Enter email body"
+              placeholder={selectedTemplate ? "Body from template" : "Enter email body"}
+              disabled={!!selectedTemplate}
             />
           </div>
+
+          {/* Reply-to Email */}
+          <div className="flex flex-col">
+            <label htmlFor="replyToEmail" className="font-bold mb-2">
+              Reply-to Email
+            </label>
+            <input
+              type="email"
+              name="replyToEmail"
+              id="replyToEmail"
+              value={emailDetails.replyToEmail}
+              onChange={handleChange}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter reply-to email"
+            />
+          </div>
+
+          {/* Sender Email and Password (for Outlook SMTP and Gmail) */}
+          {(selectedService === "outlook-smtp" || selectedService === "gmail") && (
+            <>
+              <div className="flex flex-col">
+                <label htmlFor="senderEmail" className="font-bold mb-2">
+                  Sender Email
+                </label>
+                <input
+                  type="email"
+                  name="senderEmail"
+                  id="senderEmail"
+                  value={emailDetails.senderEmail}
+                  onChange={handleChange}
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter sender email"
+                  required
+                />
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="senderPassword" className="font-bold mb-2">
+                  Sender Password
+                </label>
+                <input
+                  type="password"
+                  name="senderPassword"
+                  id="senderPassword"
+                  value={emailDetails.senderPassword}
+                  onChange={handleChange}
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter sender password"
+                  required
+                />
+              </div>
+            </>
+          )}
+
+          {/* Email Service Selection */}
           <div className="flex flex-col">
             <label htmlFor="emailService" className="font-bold mb-2">
               Select Email Service
@@ -129,12 +321,15 @@ const SendEmailCon = ({ setSendEmail }) => {
               <option value="outlook-smtp">Outlook SMTP</option>
               <option value="outlook-graph">Outlook Graph API</option>
               <option value="aws">AWS SES</option>
+              <option value="gmail">Gmail</option>
             </select>
           </div>
+
+          {/* Buttons */}
           <div className="flex justify-end gap-4">
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !selectedLeads.length || !selectedTemplate}
               className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 disabled:opacity-50"
             >
               {loading ? "Sending..." : "Send Email"}

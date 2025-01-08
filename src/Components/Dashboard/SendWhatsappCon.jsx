@@ -1,12 +1,7 @@
 import { useEffect, useState } from "react";
 
-<<<<<<< HEAD
  const WhatsAppCon = ({ selectedLeads, setSendWhatsApp }) => {
   const [message, setMessage] = useState("");
-=======
-export const WhatsAppCon = ({ selectedLeads, setSendWhatsApp }) => {
-  const [message, setMessage] = useState([]);
->>>>>>> 37a55e6618532d82a45a5f8d8f36cb8cb438715f
   const [profile, setProfile] = useState([]);
   const [headerUrl, setHeaderUrl] = useState(null);
   const [templates, setTemplates] = useState([]);
@@ -141,7 +136,6 @@ export const WhatsAppCon = ({ selectedLeads, setSendWhatsApp }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-<<<<<<< HEAD
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold">Send WhatsApp</h2>
@@ -159,69 +153,27 @@ export const WhatsAppCon = ({ selectedLeads, setSendWhatsApp }) => {
             </label>
             <select
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-=======
-      <div
-        className="bg-white p-6 rounded-lg shadow-lg"
-        style={{
-          overflowX: "scroll",
-          height: "800px",
-          width: "800px",
-        }}
-      >
-        <div className="flex flex-row items-center text-center">
-          <div className="w-full">
-            <h2 className="text-lg font-semibold">Send Whatsapp</h2>
-          </div>
-          <div
-            onClick={() => setSendWhatsApp(false)}
-            className="my-auto font-normal border px-3 bg-gray-200 text-red-500 cursor-pointer hover:bg-red-400 hover:text-red-100 rounded"
-          >
-            x
-          </div>
-        </div>
-        <div className="flex flex-row  mb-5">
-          <div className="flex flex-col items-start w-full">
-            <label htmlFor="type" className="font-bold p-1 text-base">
-              Select Whatsapp
-            </label>
-            <select
-              className="px-3  w-[90%] py-2 border border-gray-400 rounded font-light focus:ring-blue-500 text-base focus:border-blue-500 "
->>>>>>> 37a55e6618532d82a45a5f8d8f36cb8cb438715f
               value={selectedWhatsApp}
               onChange={handleWhatsappChange}
               id="type"
             >
-<<<<<<< HEAD
               <option value="WS">Scan WhatsApp</option>
               <option value="WA">WhatsApp API</option>
             </select>
           </div>
           <div className="flex flex-col">
             <label htmlFor="template" className="font-bold mb-2">
-=======
-              <option value="WS">Scan Whatsapp</option>
-              <option value="WA">Whatsapp Api</option>
-            </select>
-          </div>
-          <div className="flex flex-col items-start w-full">
-            <label htmlFor="template" className="font-bold p-1 text-base">
->>>>>>> 37a55e6618532d82a45a5f8d8f36cb8cb438715f
               Template
             </label>
             <select
               name="template"
               id="template"
               onChange={handleTemplateChange}
-<<<<<<< HEAD
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-=======
-              className="px-3  w-[90%] py-2 border border-gray-400 rounded font-light focus:ring-blue-500 text-base focus:border-blue-500 "
->>>>>>> 37a55e6618532d82a45a5f8d8f36cb8cb438715f
             >
               <option value="">Select Template</option>
               {templates.length > 0 &&
                 templates.map((template, index) => (
-<<<<<<< HEAD
                   <option key={index} value={index}>
                     {template.template}
                   </option>
@@ -282,64 +234,10 @@ export const WhatsAppCon = ({ selectedLeads, setSendWhatsApp }) => {
                 src={headerUrl}
                 alt="Header"
                 className="w-full h-auto rounded-lg border border-gray-300"
-=======
-                  <option value={index}>{template.template}</option>
-                ))}
-            </select>
-          </div>
-          <div className="flex flex-row items-end gap-4 w-full">
-            {selectedWhatsApp === "WS" && (
-              <>
-                {profile.length === 0 && (
-                  <div className="bg-red-400 text-white p-2 rounded hover:bg-red-600 font-normal font-mono text-base">
-                    scan whatsapp first
-                  </div>
-                )}
-                {profile.length === 1 && !profile[0].active && (
-                  <div className="bg-red-400 text-white p-2 rounded hover:bg-red-600 font-normal font-mono text-base">
-                    re-scan whatsapp
-                  </div>
-                )}
-                {profile.length === 1 && profile[0].active && (
-                  <button
-                    onClick={sendMessage}
-                    className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 font-normal font-mono text-base"
-                  >
-                    Send
-                  </button>
-                )}
-              </>
-            )}
-            {selectedWhatsApp === "WA" && (
-              <div className="bg-red-400 text-white p-2 rounded hover:bg-red-600 font-normal font-mono text-base">
-                not available
-              </div>
-            )}
-
-            <button
-              onClick={() => setSendWhatsApp(false)}
-              className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 font-normal font-mono text-base"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-        {headerUrl && (
-          <div className="flex flex-col items-start w-full">
-            <label htmlFor="header" className="font-bold p-1 text-base">
-              Header Image
-            </label>
-            <div className="w-1/3 h-1/3">
-              <img
-                src={headerUrl}
-                id="header"
-                className="mb-4 border border-gray-400"
->>>>>>> 37a55e6618532d82a45a5f8d8f36cb8cb438715f
               />
             </div>
           </div>
         )}
-<<<<<<< HEAD
         <div className="mb-6">
           <label className="font-bold mb-2">Message</label>
           <textarea
@@ -360,27 +258,9 @@ export const WhatsAppCon = ({ selectedLeads, setSendWhatsApp }) => {
             {loading ? "Submitting..." : "Submit"}
           </button>
         </div>
-=======
-        <div className="flex flex-col items-start w-full">
-          <label htmlFor="message" className="font-bold p-1 text-base">
-            Message
-          </label>
-          <textarea
-            disabled
-            value={message}
-            id="message"
-            onChange={(e) => setMessage(e.target.value)}
-            className="px-3  w-full mb-4 py-2 border border-gray-400 rounded font-light focus:ring-blue-500 text-base focus:border-blue-500 "
-            rows="13"
-          />
-        </div>
->>>>>>> 37a55e6618532d82a45a5f8d8f36cb8cb438715f
       </div>
     </div>
   );
 };
-<<<<<<< HEAD
 
 export default WhatsAppCon
-=======
->>>>>>> 37a55e6618532d82a45a5f8d8f36cb8cb438715f
